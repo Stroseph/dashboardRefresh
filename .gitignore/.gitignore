@@ -1,0 +1,36 @@
+#NoEnv  ; Recommended for performance and compatibility with future AutoHotkey releases.
+; #Warn  ; Enable warnings to assist with detecting common errors.
+SendMode Input  ; Recommended for new scripts due to its superior speed and reliability.
+SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
+
+$#d::
+
+URL := "https://360blue.bluefolder.com/classic/dashboard/personal.aspx"
+
+WB := ComObjCreate("InternetExplorer.Application")
+WB.Visible := True
+;WB.FullScreen := true ;works but doesnt allow for addy bar
+WinMaximize, % "ahk_id " WB.HWND
+WB.Navigate(URL)
+While wb.readyState != 4 || wb.document.readyState != "complete" || wb.busy 
+	Sleep, 10
+wb.document.getElementsByTagName("A")[6].Click()
+While wb.readyState != 4 || wb.document.readyState != "complete" || wb.busy 
+	Sleep, 10
+return
+
+;wb := ComObjCreate("InternetExplorer.Application") ; Handle Creation
+;wb.Visible := True ;IE default is invisible this allows you to see
+;wb.Navigate("https://360blue.bluefolder.com/classic/dashboard/personal.aspx") ;goes to Webpage
+
+;return
+
+IEGet(Name="")        ;Retrieve pointer to existing IE window/tab
+{
+    IfEqual, Name,, WinGetTitle, Name, ahk_class IEFrame
+        Name := ( Name="New Tab - Windows Internet Explorer" ) ? "about:Tabs"
+        : RegExReplace( Name, " - (Windows|Microsoft) Internet Explorer" )
+    For wb in ComObjCreate( "Shell.Application" ).Windows
+        If ( wb.LocationName = Name ) && InStr( wb.FullName, "iexplore.exe" )
+            Return wb
+}
